@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chatbot Averías - Ensanche Isabelita</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e5ddd5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+    .chat-container {
+      background-color: #fff;
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .message {
+      margin: 8px 0;
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 75%;
+      line-height: 1.4;
+    }
+    .bot {
+      background-color: #dcf8c6;
+      align-self: flex-start;
+    }
+    .user {
+      background-color: #ececec;
+      align-self: flex-end;
+    }
+    .input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    .input-area button {
+      background-color: #25d366;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .whatsapp-btn {
+      margin: 15px auto;
+      display: block;
+      background-color: #25d366;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="messages" id="chat"></div>
+    <div class="input-area">
+      <input type="text" id="input" placeholder="Escribe aquí..." />
+      <button onclick="sendMessage()">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
+
+    let step = 0;
+    let nombre = "";
+    let direccion = "";
+    let falla = "";
+
+    const respuestas = [
+      "👋 Hola, soy el asistente de averías Altice Isabelita. ¿Cuál es tu nombre?",
+      "📍 ¿En qué zona estás?",
+      "📶 ¿Qué tipo de falla presentas? (Señal, Internet, Llamadas)"
+    ];
+
+    function addMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+      msg.textContent = text;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function sendMessage() {
+      const value = input.value.trim();
+      if (!value) return;
+      addMessage(value, "user");
+
+      if (step === 0) {
+        nombre = value;
+        setTimeout(() => addMessage(respuestas[1], "bot"), 500);
+      } else if (step === 1) {
+        direccion = value;
+        setTimeout(() => addMessage(respuestas[2], "bot"), 500);
+      } else if (step === 2) {
+        falla = value;
+        setTimeout(() => {
+          addMessage(`✅ Gracias ${nombre}. Hemos registrado tu reporte por "${falla}" en "${direccion}".`, "bot");
+          const link = `https://wa.me/18095551234?text=Hola,%20tengo%20una%20falla%20de%20${falla}%20en%20${direccion},%20mi%20nombre%20es%20${nombre}`;
+          const btn = document.createElement("a");
+          btn.className = "whatsapp-btn";
+          btn.href = link;
+          btn.target = "_blank";
+          btn.textContent = "📞 Contactar por WhatsApp";
+          chat.appendChild(btn);
+          chat.scrollTop = chat.scrollHeight;
+        }, 500);
+      }
+
+      input.value = "";
+      step++;
+    }
+
+    // Mensaje inicial
+    window.onload = () => setTimeout(() => addMessage(respuestas[0], "bot"), 500);
+  </script>
+</body>
+</html>
